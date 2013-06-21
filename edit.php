@@ -90,7 +90,17 @@ if (optional_param('addnewsectionafterselected', null, PARAM_CLEAN) &&
 	       			WHERE course = '$courseid'
 	       			AND section <> 0";
 	    $DB->execute($sql);
-	}
+
+	    // update the course_format_options table
+    	$conditions = array('id' => $courseid, 'name' => 'numsections');
+    	if (!$courseformat = $DB->get_record('course_format_options', $conditions)) {
+    		error('Course format record doesn\'t exist');
+    	}
+    	$courseformat->value = min($counter,52);
+    	if (!$DB->update_record('course_format_options',$courseformat)) {
+    		print_error('coursenotupdated');
+    	}
+    }
 }
 
 if (optional_param('sectiondeleteselected', false, PARAM_BOOL) &&
@@ -113,6 +123,15 @@ if (optional_param('sectiondeleteselected', false, PARAM_BOOL) &&
 		$section->section = $counter;
 		$DB->update_record('course_sections', $section);
 		$counter++;
+	}
+	// update the course_format_options table
+	$conditions = array('id' => $courseid, 'name' => 'numsections');
+	if (!$courseformat = $DB->get_record('course_format_options', $conditions)) {
+		error('Course format record doesn\'t exist');
+	}
+	$courseformat->value = min($counter - 1,52);
+	if (!$DB->update_record('course_format_options',$courseformat)) {
+		print_error('coursenotupdated');
 	}
 }
 
@@ -412,6 +431,11 @@ function process_form($courseid, $data) {
 	}
 	$shortname = $COURSE->shortname;
 
+	$conditions = array('id' => $courseid, 'name' => 'numsections');
+	if (!$courseformat = $DB->get_record('course_format_options', $conditions)) {
+		error('Course format record doesn\'t exist');
+	}
+
 	$context = get_context_instance(CONTEXT_COURSE, $courseid);
 //	if ($data = data_submitted() and confirm_sesskey()) {
 		$context = get_context_instance(CONTEXT_COURSE, $courseid);
@@ -421,10 +445,27 @@ function process_form($courseid, $data) {
 			//// Process course availability
 			$course->visible = $data['course'];
 			//// Process number of sections
-			$course->numsections = min($data['number'],52);
 			$course->fullname = addslashes($course->fullname);
 			if (!$DB->update_record('course',$course)) {
 				print_error('coursenotupdated');
+			}
+			$courseformat->value = min($data['number'],52);
+			if (!$DB->update_record('course_format_options',$courseformat)) {
+				print_error('coursenotupdated');
+			}
+			// check to see if new sections need to be added onto the end
+			$sql = " SELECT MAX(section) from " . $CFG->prefix . "course_sections
+			            WHERE course = '$courseid'";
+			$maxsection = $DB->get_field_sql($sql);
+			for ($i = $data['number'] - $maxsection; $i > 0; $i--) {
+			    // clone the previous sectionid
+			    $newsection = $DB->get_record('course_sections', array('course' => $courseid, 'section' => $maxsection));
+			    $newsection->name = null;
+			    $newsection->summary = '';
+			    $newsection->sequence = '';
+			    $newsection->section = $maxsection + $i;
+			    unset($newsection->id);
+			    $newsection->id = $DB->insert_record('course_sections', $newsection, true);
 			}
 		}
 //	}

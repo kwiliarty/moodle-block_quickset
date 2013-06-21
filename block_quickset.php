@@ -32,7 +32,7 @@
     } //has_config
 
     function get_content() {
-		global $CFG, $COURSE, $USER, $PAGE;
+		global $CFG, $COURSE, $USER, $PAGE, $DB;
 		echo '<style>';
 		include_once 'styles.css';
 		echo '</style>';
@@ -40,6 +40,7 @@
         $UNAVAILABLE = 0;
 	  $this->content = new stdClass;
 	  $returnurl = "$CFG->wwwroot/course/view.php?id=$COURSE->id";
+	  $numsections = $DB->get_field('course_format_options', 'value', array('courseid' => $COURSE->id, 'name' => 'numsections'));
 
       $context = get_context_instance(CONTEXT_COURSE, $COURSE->id);
     if (has_capability('moodle/course:update', $context)) {
@@ -83,17 +84,17 @@
 
                 . '<div class="setleft blue toplevel" style="margin-top:4px" >Visible sections </div>'
                 . '<div class="setright" style="margin-top:4px">'
-                	. '<input type="text" name="number" size="2" value="'.$COURSE->numsections.'"/>'
+                	. '<input type="text" name="number" size="2" value="'.$numsections.'"/>'
                 . '</div>'
 
                 . '<br /><br />'
 
                 . '<div style="min-width:100%">'
                 	. '<span class="updatesettings">'
-	                	. '<input type="submit" name="updatesettings" style="display:inline-block;font-size:1em;float:left;margin-right:0px;margin-left:0px;padding-left:0px;background-color: #ff9999" value="Update settings">'
+	                	. '<input type="submit" name="updatesettings" style="display:inline-block;font-size:.9em;float:left;margin-right:0px;margin-left:0px;padding-left:0px;background-color: #ff9999" value="Update settings">'
                 	. '</span>'
 	                . '<span class="noaction">'
-	                	. '<input type="submit" name="noaction" value="Edit Sections" style="display:inline-block;float:right;font-size:1em;margin-right:0px;margin-left:0px;padding-right:0px;background-color: #66ffcc">'
+	                	. '<input type="submit" name="noaction" value="Edit Sections" style="display:inline-block;float:right;font-size:.9em;margin-right:0px;margin-left:0px;padding-right:0px;background-color: #66ffcc">'
 	                . '</span>'
 	            . '</div>'
 

@@ -20,8 +20,8 @@ display:inline;
 #sections .section .sectioncontainer div.sectnum {width:3.9em;padding-top:0.5em;}
 /*div.sectnum {display:block;float:left;width:1.4em;padding-right:0.3em;padding-left:0;z-index:99;color:#333;}*/
 #sections .section .sectioncontainer div.sectnum {display:inline-block;float:left;padding-top:.5em;}*/
-#sections .section .sectioncontainer div.sectnum {font-size:.8em;}
-#sections .section .sectioncontainer .sectnum label {font-size:.8em;display:inline-block;padding-right: 0.25em;}
+#sections .section .sectioncontainer div.sectnum {font-size:.7em;}
+#sections .section .sectioncontainer .sectnum label {font-size:.7em;display:inline-block;padding-right: 0.25em;}
 #sections .reordercontrols {padding-right:1em;margin-top:0.5em;padding-top:0.5em;padding-bottom:0.5em;}
 #sections .reordercontrols .moveselectedonpage {float:right;display:inline-block;padding:0.5em 0;}
 #sections .reordercontrols .sectiondeleteselected {float:left;display:inline-block;margin-right:1em;}
@@ -31,6 +31,10 @@ display:inline;
 form#sections {
 	max-width: 85%;
 	margin: auto;
+}
+
+block_quickset input text {
+	size:"2";
 }
 
 #quickset input button
