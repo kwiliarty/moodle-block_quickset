@@ -92,7 +92,7 @@ if (optional_param('addnewsectionafterselected', null, PARAM_CLEAN) &&
 	    $DB->execute($sql);
 
 	    // update the course_format_options table
-    	$conditions = array('id' => $courseid, 'name' => 'numsections');
+    	$conditions = array('courseid' => $courseid, 'name' => 'numsections');
     	if (!$courseformat = $DB->get_record('course_format_options', $conditions)) {
     		error('Course format record doesn\'t exist');
     	}
@@ -125,7 +125,7 @@ if (optional_param('sectiondeleteselected', false, PARAM_BOOL) &&
 		$counter++;
 	}
 	// update the course_format_options table
-	$conditions = array('id' => $courseid, 'name' => 'numsections');
+	$conditions = array('courseid' => $courseid, 'name' => 'numsections');
 	if (!$courseformat = $DB->get_record('course_format_options', $conditions)) {
 		error('Course format record doesn\'t exist');
 	}
@@ -431,7 +431,7 @@ function process_form($courseid, $data) {
 	}
 	$shortname = $COURSE->shortname;
 
-	$conditions = array('id' => $courseid, 'name' => 'numsections');
+	$conditions = array('courseid' => $courseid, 'name' => 'numsections');
 	if (!$courseformat = $DB->get_record('course_format_options', $conditions)) {
 		error('Course format record doesn\'t exist');
 	}
