@@ -395,7 +395,6 @@ function process_form($courseid, $data) {
 		//// Process course availability
 		$course->visible = $data['course'];
 		//// Process number of sections
-		$course->fullname = addslashes($course->fullname);
 		if (!$DB->update_record('course',$course)) {
 			print_error('coursenotupdated');
 		}
