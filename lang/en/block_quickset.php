@@ -1,7 +1,6 @@
 <?PHP // $Id$
       // block_quickset.php - created by Bob Puffer CLAMP, Luther College
 
-
 $string['pluginname'] = 'Quicksets';
 $string['addnewsectionsafterselected'] = 'Add new course section after selected';
 $string['reordersections'] = 'Reorder and/or submit section changes';
