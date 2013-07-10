@@ -148,11 +148,11 @@ if (optional_param('savechanges', false, PARAM_BOOL) && confirm_sesskey()) {
             $sections[$value] = $sectionid;
         } elseif (preg_match('!^n(pg)?([0-9]+)$!', $key, $namematches)) {
             // Parse input for ordering info.
-            $sectionname = $namematches[2];
+            $sectionname = $matches[2];
             // Make sure two sections don't overwrite each other. If we get a second
             // section with the same position, shift the second one along to the next gap.
             $value = clean_param($value, PARAM_TEXT);
-            $sectionnames[$value] = $sectionname;
+            $sectionnames[$value] = $sectionid;
         }
     }
 
