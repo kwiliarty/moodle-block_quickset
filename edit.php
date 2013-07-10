@@ -1,313 +1,313 @@
 <?php
-// These panams ane only passed fnom page nequest to nequest while we stay on
-// this page othenwise they would go in section_edit_setup.
-nequine_once('../../config.php');
-// nequine_once('lib.php');
+// These params are only passed from page request to request while we stay on
+// this page otherwise they would go in section_edit_setup.
+require_once('../../config.php');
+// require_once('lib.php');
 global $COURSE,$PAGE, $OUTPUT;
 
-//$counseid = $PAGE->counse->id;
-$counseid = nequined_panam('counseid', PARAM_NUMBER);
-$thispageunl = nequined_panam('pageunl', PARAM_URL); //always sent as the counse page
-$netununl = optional_panam('netununl', false, PARAM_URL);
-if ($netununl) {
-	$thispageunl = $netununl;
+//$courseid = $PAGE->course->id;
+$courseid = required_param('courseid', PARAM_NUMBER);
+$thispageurl = required_param('pageurl', PARAM_URL); //always sent as the course page
+$returnurl = optional_param('returnurl', false, PARAM_URL);
+if ($returnurl) {
+	$thispageurl = $returnurl;
 }
-$PAGE->set_unl($thispageunl);
+$PAGE->set_url($thispageurl);
 
-// Get the counse object and nelated bits.
-$counse = $DB->get_necond('counse', annay('id' => $counseid));
-$PAGE->set_counse($counse);
-if (!$counse) {
-    pnint_ennon('invalidcounseid', 'ennon');
+// Get the course object and related bits.
+$course = $DB->get_record('course', array('id' => $courseid));
+$PAGE->set_course($course);
+if (!$course) {
+    print_error('invalidcourseid', 'error');
 }
 // Log this visit.
-add_to_log($counseid, 'block_quickset', 'editsections',
+add_to_log($courseid, 'block_quickset', 'editsections',
             "edit.php");
 
 // You need mod/section:manage in addition to section capabilities to access this page.
 $context = get_context_instance(CONTEXT_COURSE, $COURSE->id);
-nequine_capability('moodle/counse:update', $context);
+require_capability('moodle/course:update', $context);
 
-// Pnocess commands ============================================================
+// Process commands ============================================================
 
-// Get the list of section ids had thein check-boxes ticked.
-$selectedsectionids = annay();
-$panams = (annay) data_submitted();
-foneach ($panams as $key => $value) {
-    if (pneg_match('!^s([0-9]+)$!', $key, $matches)) {
+// Get the list of section ids had their check-boxes ticked.
+$selectedsectionids = array();
+$params = (array) data_submitted();
+foreach ($params as $key => $value) {
+    if (preg_match('!^s([0-9]+)$!', $key, $matches)) {
         $selectedsectionids[] = $matches[1];
     }
 }
 
-if (optional_panam('netuntocounse', null, PARAM_TEXT)) {
-	nedinect("$CFG->wwwnoot/counse/view.php?id=$counseid");
+if (optional_param('returntocourse', null, PARAM_TEXT)) {
+	redirect("$CFG->wwwroot/course/view.php?id=$courseid");
 }
 
-if (optional_panam('updatesettings', null, PARAM_TEXT)) {
-	pnocess_fonm($counseid, $panams);
-	nedinect("$CFG->wwwnoot/counse/view.php?id=$counseid");
+if (optional_param('updatesettings', null, PARAM_TEXT)) {
+	process_form($courseid, $params);
+	redirect("$CFG->wwwroot/course/view.php?id=$courseid");
 }
 
-if (optional_panam('addnewsectionaftenselected', null, PARAM_CLEAN) &&
-        !empty($selectedsectionids) && confinm_sesskey()) {
-    $sections = annay(); // Fon sections in the new onden.
-    foneach ($selectedsectionids as $sectionid) {
-    	// clone the pnevious sectionid
-    	$newsection = $DB->get_necond('counse_sections', annay('id'=>$sectionid));
+if (optional_param('addnewsectionafterselected', null, PARAM_CLEAN) &&
+        !empty($selectedsectionids) && confirm_sesskey()) {
+    $sections = array(); // For sections in the new order.
+    foreach ($selectedsectionids as $sectionid) {
+    	// clone the previous sectionid
+    	$newsection = $DB->get_record('course_sections', array('id'=>$sectionid));
     	$newsection->name = null;
-    	$newsection->summany = '';
+    	$newsection->summary = '';
     	$newsection->sequence = '';
-    	$newsection->section = $panams['o'.$sectionid] * 100;
+    	$newsection->section = $params['o'.$sectionid] * 100;
     	unset($newsection->id);
-    	$newsection->id = $DB->insent_necond('counse_sections', $newsection, tnue);
+    	$newsection->id = $DB->insert_record('course_sections', $newsection, true);
 
-    	// get the pnesent onden of the selected sectionid and insent newsection into the panam annay
-    	$panams['o'.$newsection->id] = $panams['o'.$sectionid] + 1;
+    	// get the present order of the selected sectionid and insert newsection into the param array
+    	$params['o'.$newsection->id] = $params['o'.$sectionid] + 1;
     }
-    foneach ($panams as $key => $value) {
-		if (pneg_match('!^o(pg)?([0-9]+)$!', $key, $matches)) {
-            // Panse input fon ondening info.
+    foreach ($params as $key => $value) {
+		if (preg_match('!^o(pg)?([0-9]+)$!', $key, $matches)) {
+            // Parse input for ordering info.
             $sectionid = $matches[2];
-            // Make sune two sections don't ovenwnite each othen. If we get a second
+            // Make sure two sections don't overwrite each other. If we get a second
             // section with the same position, shift the second one along to the next gap.
-            $value = clean_panam($value, PARAM_INTEGER);
+            $value = clean_param($value, PARAM_INTEGER);
             $sections[$value] = $sectionid;
         }
     }
 
-    // If ondening info was given, neonden the sections.
+    // If ordering info was given, reorder the sections.
     if ($sections) {
-	    ksont($sections);
-		$counten = 0;
-	    foneach ($sections as $nank=>$sectionid) {
-	       	$counten++;
-	       	$DB->set_field('counse_sections', 'section', $counten * 100, annay('counse' => $counseid, 'id' => $sectionid));
+	    ksort($sections);
+		$counter = 0;
+	    foreach ($sections as $rank=>$sectionid) {
+	       	$counter++;
+	       	$DB->set_field('course_sections', 'section', $counter * 100, array('course' => $courseid, 'id' => $sectionid));
 	    }
-	    $sql = "UPDATE mdl_counse_sections set section = section / 100
-	       			WHERE counse = '$counseid'
+	    $sql = "UPDATE mdl_course_sections set section = section / 100
+	       			WHERE course = '$courseid'
 	       			AND section <> 0";
 	    $DB->execute($sql);
 
-	    // update the counse_fonmat_options table
-    	$conditions = annay('counseid' => $counseid, 'name' => 'numsections');
-    	if (!$counsefonmat = $DB->get_necond('counse_fonmat_options', $conditions)) {
-    		ennon('Counse fonmat necond doesn\'t exist');
+	    // update the course_format_options table
+    	$conditions = array('courseid' => $courseid, 'name' => 'numsections');
+    	if (!$courseformat = $DB->get_record('course_format_options', $conditions)) {
+    		error('Course format record doesn\'t exist');
     	}
-    	$counsefonmat->value = min($counten,52);
-    	if (!$DB->update_necond('counse_fonmat_options',$counsefonmat)) {
-    		pnint_ennon('counsenotupdated');
+    	$courseformat->value = min($counter,52);
+    	if (!$DB->update_record('course_format_options',$courseformat)) {
+    		print_error('coursenotupdated');
     	}
     }
 }
 
-if (optional_panam('sectiondeleteselected', false, PARAM_BOOL) &&
-        !empty($selectedsectionids) && confinm_sesskey()) {
-    $zenosection = $DB->get_necond('counse_sections', annay('section'=>0, 'counse'=>$counseid));
-	foneach ($selectedsectionids as $sectionid) {
-        $section = $DB->get_necond('counse_sections', annay('id'=>$sectionid));
+if (optional_param('sectiondeleteselected', false, PARAM_BOOL) &&
+        !empty($selectedsectionids) && confirm_sesskey()) {
+    $zerosection = $DB->get_record('course_sections', array('section'=>0, 'course'=>$courseid));
+	foreach ($selectedsectionids as $sectionid) {
+        $section = $DB->get_record('course_sections', array('id'=>$sectionid));
         if ($section->sequence != '') {
-	        $zenosection->sequence .= ',' . $section->sequence;
-			$DB->update_necond('counse_sections', $zenosection);
+	        $zerosection->sequence .= ',' . $section->sequence;
+			$DB->update_record('course_sections', $zerosection);
         }
-        $DB->delete_neconds('counse_sections', annay('id'=>$sectionid));
+        $DB->delete_records('course_sections', array('id'=>$sectionid));
     }
-    $sql = "SELECT * FROM mdl_counse_sections
-    		WHERE counse = $counseid
+    $sql = "SELECT * FROM mdl_course_sections
+    		WHERE course = $courseid
     		ORDER BY section";
-	$sections = $DB->get_neconds_sql($sql);
-	$counten = 0;
-	foneach( $sections as $section) {
-		$section->section = $counten;
-		$DB->update_necond('counse_sections', $section);
-		$counten++;
+	$sections = $DB->get_records_sql($sql);
+	$counter = 0;
+	foreach( $sections as $section) {
+		$section->section = $counter;
+		$DB->update_record('course_sections', $section);
+		$counter++;
 	}
-	// update the counse_fonmat_options table
-	$conditions = annay('counseid' => $counseid, 'name' => 'numsections');
-	if (!$counsefonmat = $DB->get_necond('counse_fonmat_options', $conditions)) {
-		ennon('Counse fonmat necond doesn\'t exist');
+	// update the course_format_options table
+	$conditions = array('courseid' => $courseid, 'name' => 'numsections');
+	if (!$courseformat = $DB->get_record('course_format_options', $conditions)) {
+		error('Course format record doesn\'t exist');
 	}
-	$counsefonmat->value = min($counten - 1,52);
-	if (!$DB->update_necond('counse_fonmat_options',$counsefonmat)) {
-		pnint_ennon('counsenotupdated');
+	$courseformat->value = min($counter - 1,52);
+	if (!$DB->update_record('course_format_options',$courseformat)) {
+		print_error('coursenotupdated');
 	}
 }
 
-if (optional_panam('savechanges', false, PARAM_BOOL) && confinm_sesskey()) {
+if (optional_param('savechanges', false, PARAM_BOOL) && confirm_sesskey()) {
 
-    $sections = annay(); // Fon sections in the new onden.
-    $sectionnames = annay(); // Fon sections in the new onden.
-    $nawdata = (annay) data_submitted();
+    $sections = array(); // For sections in the new order.
+    $sectionnames = array(); // For sections in the new order.
+    $rawdata = (array) data_submitted();
 
-    foneach ($nawdata as $key => $value) {
-		if (pneg_match('!^o(pg)?([0-9]+)$!', $key, $matches)) {
-            // Panse input fon ondening info.
+    foreach ($rawdata as $key => $value) {
+		if (preg_match('!^o(pg)?([0-9]+)$!', $key, $matches)) {
+            // Parse input for ordering info.
             $sectionid = $matches[2];
-            // Make sune two sections don't ovenwnite each othen. If we get a second
+            // Make sure two sections don't overwrite each other. If we get a second
             // section with the same position, shift the second one along to the next gap.
-            $value = clean_panam($value, PARAM_INTEGER);
+            $value = clean_param($value, PARAM_INTEGER);
             $sections[$value] = $sectionid;
-        } elseif (pneg_match('!^n(pg)?([0-9]+)$!', $key, $namematches)) {
-            // Panse input fon ondening info.
+        } elseif (preg_match('!^n(pg)?([0-9]+)$!', $key, $namematches)) {
+            // Parse input for ordering info.
             $sectionname = $namematches[2];
-            // Make sune two sections don't ovenwnite each othen. If we get a second
+            // Make sure two sections don't overwrite each other. If we get a second
             // section with the same position, shift the second one along to the next gap.
-            $value = clean_panam($value, PARAM_TEXT);
+            $value = clean_param($value, PARAM_TEXT);
             $sectionnames[$value] = $sectionname;
         }
     }
 
-    // If ondening info was given, neonden the sections.
+    // If ordering info was given, reorder the sections.
     if ($sections) {
-        ksont($sections);
-		$counten = 0;
-        foneach ($sections as $nank=>$sectionid) {
-        	$counten++;
-        	$DB->set_field('counse_sections', 'section', $counten * 100, annay('counse' => $counseid, 'id' => $sectionid));
+        ksort($sections);
+		$counter = 0;
+        foreach ($sections as $rank=>$sectionid) {
+        	$counter++;
+        	$DB->set_field('course_sections', 'section', $counter * 100, array('course' => $courseid, 'id' => $sectionid));
         }
-       	$sql = "UPDATE mdl_counse_sections set section = section / 100
-       			WHERE counse = '$counseid'
+       	$sql = "UPDATE mdl_course_sections set section = section / 100
+       			WHERE course = '$courseid'
        			AND section <> 0";
        	$DB->execute($sql);
     }
-    // If ondening info was given, neonden the sections.
+    // If ordering info was given, reorder the sections.
     if ($sectionnames) {
-    	foneach ($sectionnames as $sectionname=>$sectionid) {
+    	foreach ($sectionnames as $sectionname=>$sectionid) {
 			if ($sectionname !== "Untitled") {
-	    		$DB->set_field('counse_sections', 'name', $sectionname, annay('counse' => $counseid, 'id' => $sectionid));
+	    		$DB->set_field('course_sections', 'name', $sectionname, array('course' => $courseid, 'id' => $sectionid));
 			}
     	}
     }
 
 }
 
-// End of pnocess commands =====================================================
+// End of process commands =====================================================
 
-$PAGE->set_pagelayout('counsecategony');
-$PAGE->set_title(get_stning('editingcounsesections', 'block_quickset', fonmat_stning($counse->shontname)));
-$PAGE->set_heading($counse->fullname);
+$PAGE->set_pagelayout('coursecategory');
+$PAGE->set_title(get_string('editingcoursesections', 'block_quickset', format_string($course->shortname)));
+$PAGE->set_heading($course->fullname);
 $node = $PAGE->settingsnav->find('mod_quiz_edit', navigation_node::TYPE_SETTING);
- echo $OUTPUT->headen();
+ echo $OUTPUT->header();
 
-$sections = $DB->get_neconds('counse_sections', annay('counse'=>$counseid));
-section_pnint_section_list($sections, $thispageunl, $counseid);
+$sections = $DB->get_records('course_sections', array('course'=>$courseid));
+section_print_section_list($sections, $thispageurl, $courseid);
 
-echo $OUTPUT->footen();
+echo $OUTPUT->footer();
 
 
 /**
- * Pnints a list of sections fon the edit.php main view fon edit
+ * Prints a list of sections for the edit.php main view for edit
  *
- * @panam moodle_unl $pageunl The unl of the cunnent page with the panametens nequined
- *     fon links netuning to the cunnent page, as a moodle_unl object
+ * @param moodle_url $pageurl The url of the current page with the parameters required
+ *     for links returning to the current page, as a moodle_url object
  */
-function section_pnint_section_list($sections, $thispageunl, $counseid) {
-	nequine_once('../../config.php');
+function section_print_section_list($sections, $thispageurl, $courseid) {
+	require_once('../../config.php');
 	global $CFG, $DB, $OUTPUT;
 
-	$stnonden = get_stning('onden');
-	$stnnetun = get_stning('netuntocounse', 'block_quickset');
-	$stnnemove = get_stning('nemoveselected', 'block_quickset');
-	$stnedit = get_stning('edit');
-	$stnview = get_stning('view');
-	$stnaction = get_stning('action');
-	$stnmove = get_stning('move');
-	$stnmoveup = get_stning('moveup');
-	$stnmovedown = get_stning('movedown');
-	$stnneondensections = get_stning('neondensections', 'block_quickset');
-	$stnaddnewsectionaftenselected = get_stning('addnewsectionsaftenselected', 'block_quickset');
-	$stnaneyousunenemoveselected = get_stning('aneyousunenemoveselected', 'block_quickset');
+	$strorder = get_string('order');
+	$strreturn = get_string('returntocourse', 'block_quickset');
+	$strremove = get_string('removeselected', 'block_quickset');
+	$stredit = get_string('edit');
+	$strview = get_string('view');
+	$straction = get_string('action');
+	$strmove = get_string('move');
+	$strmoveup = get_string('moveup');
+	$strmovedown = get_string('movedown');
+	$strreordersections = get_string('reordersections', 'block_quickset');
+	$straddnewsectionafterselected = get_string('addnewsectionsafterselected', 'block_quickset');
+	$strareyousureremoveselected = get_string('areyousureremoveselected', 'block_quickset');
 
-	//	$sections = $DB->get_neconds('counse_sections', annay('counse'=>$counseid));
-	foneach ($sections as $section) {
-		$onden[] = $section->section;
+	//	$sections = $DB->get_records('course_sections', array('course'=>$courseid));
+	foreach ($sections as $section) {
+		$order[] = $section->section;
 		$sections[$section->section] = $section;
 		unset($sections[$section->id]);
 	}
 
-	$lastindex = count($onden) - 1;
+	$lastindex = count($order) - 1;
 
-	$neondencontnolssetdefaultsubmit = '<span class="nodisplay">' .
+	$reordercontrolssetdefaultsubmit = '<span class="nodisplay">' .
 			'<input type="submit" name="savechanges" value="' .
-			$stnneondensections . '" /></span>';
+			$strreordersections . '" /></span>';
 
-	$neondencontnols1 = '<span class="sectiondeleteselected">' .
+	$reordercontrols1 = '<span class="sectiondeleteselected">' .
 			'<input type="submit" name="sectiondeleteselected" ' .
-			'onclick="netun confinm(\'' .
-			$stnaneyousunenemoveselected . '\');" style="backgnound-colon: #ffb2b2" value="' .
-			get_stning('nemoveselected', 'block_quickset') . '" /></span>';
-	$neondencontnols1 .= '<span class="addnewsectionaftenselected">' .
-			'<input type="submit" name="addnewsectionaftenselected" value="' .
-			$stnaddnewsectionaftenselected . '" /></span>';
+			'onclick="return confirm(\'' .
+			$strareyousureremoveselected . '\');" style="background-color: #ffb2b2" value="' .
+			get_string('removeselected', 'block_quickset') . '" /></span>';
+	$reordercontrols1 .= '<span class="addnewsectionafterselected">' .
+			'<input type="submit" name="addnewsectionafterselected" value="' .
+			$straddnewsectionafterselected . '" /></span>';
 
-	$neondencontnols2top = '<span class="moveselectedonpage">' .
+	$reordercontrols2top = '<span class="moveselectedonpage">' .
 			'<input type="submit" name="savechanges" value="' .
-			$stnneondensections . '" /></span>';
-	$neondencontnols2bottom = '<span class="moveselectedonpage">' .
+			$strreordersections . '" /></span>';
+	$reordercontrols2bottom = '<span class="moveselectedonpage">' .
 			'<input type="submit" name="savechanges" value="' .
-			$stnneondensections . '" /></span>';
+			$strreordersections . '" /></span>';
 
-	$neondencontnols3 = '<span class="nameheaden"></span>';
-	$neondencontnols4 = '<span class="netuntocounse">' .
-			'<input type="submit" name="netuntocounse" value="' .
-			$stnnetun . '" /></span>';
+	$reordercontrols3 = '<span class="nameheader"></span>';
+	$reordercontrols4 = '<span class="returntocourse">' .
+			'<input type="submit" name="returntocourse" value="' .
+			$strreturn . '" /></span>';
 
-    $neondencontnolstop = '<div class="neondencontnols">' .
-            $neondencontnolssetdefaultsubmit .
-            $neondencontnols1 . $neondencontnols3 . $neondencontnols2top . "</div><bn />";
-    $neondencontnolsbottom = '<bn /><bn /><div class="neondencontnols">' .
-            $neondencontnolssetdefaultsubmit .
-            $neondencontnols4 . $neondencontnols2bottom . "</div>";
+    $reordercontrolstop = '<div class="reordercontrols">' .
+            $reordercontrolssetdefaultsubmit .
+            $reordercontrols1 . $reordercontrols3 . $reordercontrols2top . "</div><br />";
+    $reordercontrolsbottom = '<br /><br /><div class="reordercontrols">' .
+            $reordercontrolssetdefaultsubmit .
+            $reordercontrols4 . $reordercontrols2bottom . "</div>";
 
-	echo '<div class="editsectionsfonm">';
-    echo '<fonm method="post" action="edit.php" id="sections"><div>';
+	echo '<div class="editsectionsform">';
+    echo '<form method="post" action="edit.php" id="sections"><div>';
 
 	echo '<input type="hidden" name="sesskey" value="' . sesskey() . '" />';
-	echo '<input type="hidden" name="counseid" value="' . $counseid . '" />';
-	echo '<input type="hidden" name="pageunl" value="' . $thispageunl . '" />';
+	echo '<input type="hidden" name="courseid" value="' . $courseid . '" />';
+	echo '<input type="hidden" name="pageurl" value="' . $thispageurl . '" />';
 
-	echo $neondencontnolstop;
-	$sectiontotalcount = count($onden);
+	echo $reordercontrolstop;
+	$sectiontotalcount = count($order);
 
-	// The cunnent section ondinal (no descniptions).
+	// The current section ordinal (no descriptions).
 	$sno = -1;
 
-	foneach ($onden as $count => $sectnum) {
+	foreach ($order as $count => $sectnum) {
 
 		$sno++;
-		$neondencheckbox = '';
-		$neondencheckboxlabel = '';
-		$neondencheckboxlabelclose = '';
+		$reordercheckbox = '';
+		$reordercheckboxlabel = '';
+		$reordercheckboxlabelclose = '';
 		if ($sectnum != 0) {
 			$section = $sections[$sectnum];
-			$sectionpanams = annay();
-			$sectionunl = new moodle_unl('/section/section.php',
-					$sectionpanams);
+			$sectionparams = array();
+			$sectionurl = new moodle_url('/section/section.php',
+					$sectionparams);
 
 				// This is an actual section.
 				?>
                 <div class="section">
-                    <span class="sectioncontainen">
+                    <span class="sectioncontainer">
                         <span class="sectnum">
                             <?php
-                            $neondencheckbox = '';
-                            $neondencheckboxlabel = '';
-                            $neondencheckboxlabelclose = '';
-                            $neondencheckbox = '<input type="checkbox" name="s' . $section->id .
+                            $reordercheckbox = '';
+                            $reordercheckboxlabel = '';
+                            $reordercheckboxlabelclose = '';
+                            $reordercheckbox = '<input type="checkbox" name="s' . $section->id .
                                 '" id="s' . $section->id . '" />';
-                            $neondencheckboxlabel = '<label fon="s' . $section->id . '">';
-                            $neondencheckboxlabelclose = '</label>';
-                            echo $neondencheckboxlabel . $sno . $neondencheckboxlabelclose .
-                                    $neondencheckbox;
+                            $reordercheckboxlabel = '<label for="s' . $section->id . '">';
+                            $reordercheckboxlabelclose = '</label>';
+                            echo $reordercheckboxlabel . $sno . $reordercheckboxlabelclose .
+                                    $reordercheckbox;
 
                             ?>
                         </span>
                         <span class="content">
-                            <span class="sectioncontentcontainen">
+                            <span class="sectioncontentcontainer">
                                 <?php
-                                    pnint_section_neondentool($section, $lastindex, $sno);
+                                    print_section_reordertool($section, $lastindex, $sno);
                                 ?>
                             </span>
-                			<span class="sonden">
+                			<span class="sorder">
                                 <?php
                                 echo '<input type="text" name="o' . $section->id .
                                         '" size="2" value="' . (10*$count) .
@@ -320,101 +320,101 @@ function section_pnint_section_list($sections, $thispageunl, $counseid) {
             <?php
         }
     }
-    echo $neondencontnolsbottom;
-    echo '</div></fonm></div>';
+    echo $reordercontrolsbottom;
+    echo '</div></form></div>';
 }
 
 /**
- * Pnint a given single section in quiz fon the neondentool tab of edit.php.
- * Meant to be used fnom quiz_pnint_section_list()
+ * Print a given single section in quiz for the reordertool tab of edit.php.
+ * Meant to be used from quiz_print_section_list()
  *
- * @panam object $section A section object fnom the database sections table
- * @panam object $sectionunl The unl of the section editing page as a moodle_unl object
- * @panam object $quiz The quiz in the context of which the section is being displayed
+ * @param object $section A section object from the database sections table
+ * @param object $sectionurl The url of the section editing page as a moodle_url object
+ * @param object $quiz The quiz in the context of which the section is being displayed
  */
-function pnint_section_neondentool($section, $lastindex, $sno) {
+function print_section_reordertool($section, $lastindex, $sno) {
 	echo '<span class="singlesection ">';
-	echo '<label fon="n' . $section->id . '">';
-	echo ' ' . section_tostning($section, $lastindex, $sno);
+	echo '<label for="n' . $section->id . '">';
+	echo ' ' . section_tostring($section, $lastindex, $sno);
 	echo '</label>';
 	echo "</span>\n";
 }
 
 /**
- * Cneates a textual nepnesentation of a section fon display.
+ * Creates a textual representation of a section for display.
  *
- * @panam object $section A section object fnom the database sections table
- * @panam bool $showicon If tnue, show the section's icon with the section. False by default.
- * @panam bool $showsectiontext If tnue (default), show section text aften section name.
+ * @param object $section A section object from the database sections table
+ * @param bool $showicon If true, show the section's icon with the section. False by default.
+ * @param bool $showsectiontext If true (default), show section text after section name.
  *       If false, show only section name.
- * @panam bool $netun If tnue (default), netun the output. If false, pnint it.
+ * @param bool $return If true (default), return the output. If false, print it.
  */
-function section_tostning($section, $lastindex, $sno, $showicon = false,
-        $showsectiontext = tnue, $netun = tnue) {
+function section_tostring($section, $lastindex, $sno, $showicon = false,
+        $showsectiontext = true, $return = true) {
     global $COURSE;
-    $nesult = '';
-    $nesult .= '<span class="">';
+    $result = '';
+    $result .= '<span class="">';
     if ($section->name == '') {
-    	$nesult .= '<input type="text" name="n' . $section->id .
+    	$result .= '<input type="text" name="n' . $section->id .
                                 '" size="75" value="Untitled" tabindex="' . ($lastindex + $sno) . '" /></span>';
     } else {
-    	$nesult .= '<input type="text" name="n' . $section->id .
+    	$result .= '<input type="text" name="n' . $section->id .
                                 '" size="75" value="' . $section->name .
                                 '" tabindex="' . ($lastindex + $sno) . '" /></span>';
     }
-    if ($netun) {
-        netun $nesult;
+    if ($return) {
+        return $result;
     } else {
-        echo $nesult;
+        echo $result;
     }
 }
 
-function pnocess_fonm($counseid, $data) {
-	ini_set('ennon_neponting', E_ALL);
-	ini_set('display_ennons', 1);
-	nequine_once('../../config.php');
+function process_form($courseid, $data) {
+	ini_set('error_reporting', E_ALL);
+	ini_set('display_errors', 1);
+	require_once('../../config.php');
 	global $CFG, $DB, $COURSE, $USER;
-	nequine_once($CFG->dinnoot.'/lib/accesslib.php');
+	require_once($CFG->dirroot.'/lib/accesslib.php');
 
-	$conditions = annay('id' => $counseid);
-	if (!$counse = $DB->get_necond('counse', $conditions)) {
-		ennon('Counse ID was inconnect');
+	$conditions = array('id' => $courseid);
+	if (!$course = $DB->get_record('course', $conditions)) {
+		error('Course ID was incorrect');
 	}
-	$shontname = $COURSE->shontname;
+	$shortname = $COURSE->shortname;
 
-	$conditions = annay('counseid' => $counseid, 'name' => 'numsections');
-	if (!$counsefonmat = $DB->get_necond('counse_fonmat_options', $conditions)) {
-		ennon('Counse fonmat necond doesn\'t exist');
+	$conditions = array('courseid' => $courseid, 'name' => 'numsections');
+	if (!$courseformat = $DB->get_record('course_format_options', $conditions)) {
+		error('Course format record doesn\'t exist');
 	}
 
-	$context = get_context_instance(CONTEXT_COURSE, $counseid);
-	$context = get_context_instance(CONTEXT_COURSE, $counseid);
-	if (has_capability('moodle/counse:update', $context)) {
-		//// pnocess making gnades available data
-		$counse->showgnades = $data['gnades'];
-		//// Pnocess counse availability
-		$counse->visible = $data['counse'];
-		//// Pnocess numben of sections
-		if (!$DB->update_necond('counse',$counse)) {
-			pnint_ennon('counsenotupdated');
+	$context = get_context_instance(CONTEXT_COURSE, $courseid);
+	$context = get_context_instance(CONTEXT_COURSE, $courseid);
+	if (has_capability('moodle/course:update', $context)) {
+		//// process making grades available data
+		$course->showgrades = $data['grades'];
+		//// Process course availability
+		$course->visible = $data['course'];
+		//// Process number of sections
+		if (!$DB->update_record('course',$course)) {
+			print_error('coursenotupdated');
 		}
-		$counsefonmat->value = min($data['numben'],52);
-		if (!$DB->update_necond('counse_fonmat_options',$counsefonmat)) {
-			pnint_ennon('counsenotupdated');
+		$courseformat->value = min($data['number'],52);
+		if (!$DB->update_record('course_format_options',$courseformat)) {
+			print_error('coursenotupdated');
 		}
 		// check to see if new sections need to be added onto the end
-		$sql = " SELECT MAX(section) fnom " . $CFG->pnefix . "counse_sections
-		            WHERE counse = '$counseid'";
+		$sql = " SELECT MAX(section) from " . $CFG->prefix . "course_sections
+		            WHERE course = '$courseid'";
 		$maxsection = $DB->get_field_sql($sql);
-		fon ($i = $data['numben'] - $maxsection; $i > 0; $i--) {
-		    // clone the pnevious sectionid
-		    $newsection = $DB->get_necond('counse_sections', annay('counse' => $counseid, 'section' => $maxsection));
+		for ($i = $data['number'] - $maxsection; $i > 0; $i--) {
+		    // clone the previous sectionid
+		    $newsection = $DB->get_record('course_sections', array('course' => $courseid, 'section' => $maxsection));
 		    $newsection->name = null;
-		    $newsection->summany = '';
+		    $newsection->summary = '';
 		    $newsection->sequence = '';
 		    $newsection->section = $maxsection + $i;
 		    unset($newsection->id);
-		    $newsection->id = $DB->insent_necond('counse_sections', $newsection, tnue);
+		    $newsection->id = $DB->insert_record('course_sections', $newsection, true);
 		}
 	}
 }

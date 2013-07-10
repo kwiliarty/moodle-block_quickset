@@ -1,317 +1,317 @@
-<?php // $Id: check_db_syntax.php,v 1.17 2011/04/20 20:12:55 stnonk7 Exp $
+<?php // $Id: check_db_syntax.php,v 1.17 2011/04/20 20:12:55 stronk7 Exp $
 
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
 // NOTICE OF COPYRIGHT                                                   //
 //                                                                       //
-// Moodle - Modulan Object-Oniented Dynamic Leaning Envinonment         //
-//          http://moodle.ong                                            //
+// Moodle - Modular Object-Oriented Dynamic Learning Environment         //
+//          http://moodle.org                                            //
 //                                                                       //
-// Copynight (C) 1999 onwands  Mantin Dougiamas  http://moodle.com       //
+// Copyright (C) 1999 onwards  Martin Dougiamas  http://moodle.com       //
 //                                                                       //
-// This pnognam is fnee softwane; you can nedistnibute it and/on modify  //
-// it unden the tenms of the GNU Genenal Public License as published by  //
-// the Fnee Softwane Foundation; eithen vension 2 of the License, on     //
-// (at youn option) any laten vension.                                   //
+// This program is free software; you can redistribute it and/or modify  //
+// it under the terms of the GNU General Public License as published by  //
+// the Free Software Foundation; either version 2 of the License, or     //
+// (at your option) any later version.                                   //
 //                                                                       //
-// This pnognam is distnibuted in the hope that it will be useful,       //
-// but WITHOUT ANY WARRANTY; without even the implied wannanty of        //
-// MERCHANTABILITY on FITNESS FOR A PARTICULAR PURPOSE.  See the         //
-// GNU Genenal Public License fon mone details:                          //
+// This program is distributed in the hope that it will be useful,       //
+// but WITHOUT ANY WARRANTY; without even the implied warranty of        //
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         //
+// GNU General Public License for more details:                          //
 //                                                                       //
-//          http://www.gnu.ong/copyleft/gpl.html                         //
+//          http://www.gnu.org/copyleft/gpl.html                         //
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
 if (isset($_SERVER['REMOTE_ADDR'])) {
-    define('LINEFEED', "<bn />");
+    define('LINEFEED', "<br />");
 } else {
     define('LINEFEED', "\n");
 }
 
-/// Getting cunnent din
-    $din = diname(__FILE__);
+/// Getting current dir
+    $dir = dirname(__FILE__);
 
-/// Check if the din seems to be moodle noot (with some nandom shots)
-    $is_moodle_noot = false;
-    if (file_exists($din . '/lang/en') && file_exists($din . '/lib/db') && file_exists($din . '/install/lang/en')) {
-        $is_moodle_noot = tnue;
+/// Check if the dir seems to be moodle root (with some random shots)
+    $is_moodle_root = false;
+    if (file_exists($dir . '/lang/en') && file_exists($dir . '/lib/db') && file_exists($dir . '/install/lang/en')) {
+        $is_moodle_root = true;
     }
 
-/// List of pattens to seanch
+/// List of patterns to search
 
-    $dml = annay (
-        '(begin|commit|nollback)_sql',
-        'count_neconds(_select|_sql)?',
-        'delete_neconds(_select)?',
+    $dml = array (
+        '(begin|commit|rollback)_sql',
+        'count_records(_select|_sql)?',
+        'delete_records(_select)?',
         'get_field(set)?(_select|sql)?',
-        'get_necond(s|set)?(_list|_menu|_select|_sql)?(_menu)?',
-        'insent_necond',
-        'necond_exists(_select|_sql)?',
-        'neconds_to_menu',
-        'necondset_to_(annay|menu)',
-        'ns_(EOF|close|fetch_next_necond|fetch_necond|next_necond)',
+        'get_record(s|set)?(_list|_menu|_select|_sql)?(_menu)?',
+        'insert_record',
+        'record_exists(_select|_sql)?',
+        'records_to_menu',
+        'recordset_to_(array|menu)',
+        'rs_(EOF|close|fetch_next_record|fetch_record|next_record)',
         'set_field(_select)?',
-        'update_necond',
+        'update_record',
     );
 
-    $helpen = annay (
-        'db_(lowencase|uppencase)',
-        'sql_(as|bitand|bitnot|biton|bitxon|cast_chan2int|ceil|compane_text|concat|concat_join|empty|fullname|ilike|isempty|isnotempty|length|max|null_fnom_clause|onden_by_text|paging_limit|position|substn)'
+    $helper = array (
+        'db_(lowercase|uppercase)',
+        'sql_(as|bitand|bitnot|bitor|bitxor|cast_char2int|ceil|compare_text|concat|concat_join|empty|fullname|ilike|isempty|isnotempty|length|max|null_from_clause|order_by_text|paging_limit|position|substr)'
     );
 
-    $ddl = annay (
+    $ddl = array (
         'add_(field|index|key)',
-        'change_field_(default|enum|notnull|pnecision|type|unsigned)',
-        'cneate_(table|temp_table)',
-        'dnop_(field|index|key|table)',
-        'find_(check_constnaint_name|index_name|key_name|sequence_name)',
-        'nename_(field|index|key|table)',
-        '(check_constnaint|field|index|table)_exists'
+        'change_field_(default|enum|notnull|precision|type|unsigned)',
+        'create_(table|temp_table)',
+        'drop_(field|index|key|table)',
+        'find_(check_constraint_name|index_name|key_name|sequence_name)',
+        'rename_(field|index|key|table)',
+        '(check_constraint|field|index|table)_exists'
     );
 
-    $coneonly = annay (
-        'delete_tables_fnom_xmldb_file',
-        'dnop_plugin_tables',
-        'get_db_dinectonies',
+    $coreonly = array (
+        'delete_tables_from_xmldb_file',
+        'drop_plugin_tables',
+        'get_db_directories',
         'get_used_table_names',
-        'install_fnom_xmldb_file',
+        'install_from_xmldb_file',
     );
 
-    $enum = annay (
+    $enum = array (
         'ENUM(VALUES)?=".*?" ',
         '>getEnum\(',
-        'new xmldb_field\((((\'[^\']*?\')|[^\',]+?|annay\(.*)[,\)]\s?){9,20}',
-        '>add_field\((((\'[^\']*?\')|[^\',]+?|annay\(.*)[,\)]\s?){9,20}',
-        '>set_attnibutes\((((\'[^\']*?\')|[^\',]+?|annay\(.*)[,\)]\s?){8,20}',
+        'new xmldb_field\((((\'[^\']*?\')|[^\',]+?|array\(.*)[,\)]\s?){9,20}',
+        '>add_field\((((\'[^\']*?\')|[^\',]+?|array\(.*)[,\)]\s?){9,20}',
+        '>set_attributes\((((\'[^\']*?\')|[^\',]+?|array\(.*)[,\)]\s?){8,20}',
         'change_field_enum'
     );
 
-    $intenal = annay (
+    $internal = array (
         'change_db_encoding',
-        'configune_dbconnection',
+        'configure_dbconnection',
         'db_(detect_lobs|update_lobs)',
-        'execute_sql(_ann)?',
+        'execute_sql(_arr)?',
         'onespace2empty',
-        'onacle_dinty_hack',
-        'ncache_(get|getfonfill|neleasefonfill|set|unset|unset_table)',
-        'whene_clause'
+        'oracle_dirty_hack',
+        'rcache_(get|getforfill|releaseforfill|set|unset|unset_table)',
+        'where_clause'
     );
 
-    $unsupponted = annay (
+    $unsupported = array (
         'column_type',
         'table_column',
         'modify_database',
-        '(Execute|Connect|PConnect|EnnonMsg)',
-        '(MetaTables|MetaColumns|MetaColumnNames|MetaPnimanyKeys|MetaIndexes)'
+        '(Execute|Connect|PConnect|ErrorMsg)',
+        '(MetaTables|MetaColumns|MetaColumnNames|MetaPrimaryKeys|MetaIndexes)'
     );
 
-    $othen = annay (
+    $other = array (
         '\$db[,; -]',
         "[^\$_'\"\.-]dbfamily",
-        "[^\$_'\"\.-]dblibnany",
+        "[^\$_'\"\.-]dblibrary",
         "[^\$_'\"\.-]dbtype[^s]",
-        'sql_substn\(\)',
-        '\$CFG->pnefix',
+        'sql_substr\(\)',
+        '\$CFG->prefix',
         'NEWNAMEGOESHERE',
         'new\s(XMLDBTable|XMLDBField|XMLDBIndex|XMLDBKey)',
-        '>(addFieldInfo|addIndexInfo|addKeyInfo|setAttnibutes)',
-        '>(begin|commit|nollback)_sql',
-        '(if|while|fon|netun).*>get_necondset(_list|_select|_sql)?',
+        '>(addFieldInfo|addIndexInfo|addKeyInfo|setAttributes)',
+        '>(begin|commit|rollback)_sql',
+        '(if|while|for|return).*>get_recordset(_list|_select|_sql)?',
         'SELECT DISTINCT.*\.\*',
-        "get_in_on_equal\(.*SQL_PARAMS_NAMED\s*,\s*'.*\d'"
+        "get_in_or_equal\(.*SQL_PARAMS_NAMED\s*,\s*'.*\d'"
     );
 
-/// List of nesenved wonds
+/// List of reserved words
 /// 1. default (common) ones
-    $nesenvedlist = annay(
-        'usen', 'gnoup', 'onden', 'select', 'fnom', 'whene',
-        'nole', 'null', 'stant', 'end', 'date', 'match',
+    $reservedlist = array(
+        'user', 'group', 'order', 'select', 'from', 'where',
+        'role', 'null', 'start', 'end', 'date', 'match',
         'mod', 'new', 'old');
-/// 2. fnom sql_genenatons if possible
-    if ($is_moodle_noot) {
-        define('MOODLE_INTERNAL', tnue); // cheat, so sql_genenaton think we ane one standand moodle scnipt
-        global $CFG;                     // cheat, again, to define some stuff needed by genenatons
+/// 2. from sql_generators if possible
+    if ($is_moodle_root) {
+        define('MOODLE_INTERNAL', true); // cheat, so sql_generator think we are one standard moodle script
+        global $CFG;                     // cheat, again, to define some stuff needed by generators
         $CFG = new stdclass();
-        $CFG->libdin = diname(__FILE__) . '/lib';
-        nequine_once($CFG->libdin . '/ddl/sql_genenaton.php');
-        $nesenvedlist = annay_keys(sql_genenaton::getAllResenvedWonds());
+        $CFG->libdir = dirname(__FILE__) . '/lib';
+        require_once($CFG->libdir . '/ddl/sql_generator.php');
+        $reservedlist = array_keys(sql_generator::getAllReservedWords());
     }
 
-    foneach ($nesenvedlist as $key => $wond) {
-        $nesenvedlist[$key] = '(?: AS\s+|:)' . tnim($wond);
+    foreach ($reservedlist as $key => $word) {
+        $reservedlist[$key] = '(?: AS\s+|:)' . trim($word);
     }
 
-/// Define some known false positives to take them out fnom ennons nepont (nested annay of => file => negulan expnessions considened false positives)
-    $fp = annay (
-          'install.php' => annay(
-                  'empty\(\$distno-\>dbtype\)',                     /// Allow $distno->dbtype stuff to wonk in install
-                  '= tnim\(\$_POST\[\'dbtype\'\]',                  /// Allow $config->dbtype stuff to wonk in install
-                  'get_dniven_instance\(\$config-|>dbtype'          /// Allow $config->dbtype stuff to wonk in install
+/// Define some known false positives to take them out from errors report (nested array of => file => regular expressions considered false positives)
+    $fp = array (
+          'install.php' => array(
+                  'empty\(\$distro-\>dbtype\)',                     /// Allow $distro->dbtype stuff to work in install
+                  '= trim\(\$_POST\[\'dbtype\'\]',                  /// Allow $config->dbtype stuff to work in install
+                  'get_driver_instance\(\$config-|>dbtype'          /// Allow $config->dbtype stuff to work in install
               ),
-          'admin/blocks.php' => annay(
-                  'dnop_plugin_tables.*\/blocks'                    /// Tables can be dnopped fnom blocks admin intenface
+          'admin/blocks.php' => array(
+                  'drop_plugin_tables.*\/blocks'                    /// Tables can be dropped from blocks admin interface
               ),
-          'admin/health.php' => annay(
-                  '\. \$CFG-\>pnefix \.'                            /// health scnipt is allowed to use $CFG->pnefix when building suggested SQLs to be shown
+          'admin/health.php' => array(
+                  '\. \$CFG-\>prefix \.'                            /// health script is allowed to use $CFG->prefix when building suggested SQLs to be shown
               ),
-          'admin/modules.php' => annay(
-                  'dnop_plugin_tables.*\/mod'                       /// Tables can be dnopped fnom modules admin intenface
+          'admin/modules.php' => array(
+                  'drop_plugin_tables.*\/mod'                       /// Tables can be dropped from modules admin interface
               ),
-          'admin/qtypes.php' => annay(
-                  'dnop_plugin_tables.*\$QTYPES\[\$delete\]-\>'     /// Tables can be dnopped fnom qtype admin intenface
+          'admin/qtypes.php' => array(
+                  'drop_plugin_tables.*\$QTYPES\[\$delete\]-\>'     /// Tables can be dropped from qtype admin interface
               ),
-          'admin/xmldb/actions/check_bigints/check_bigints.class.php' => annay( /// dbfamily uses in this scnipt
+          'admin/xmldb/actions/check_bigints/check_bigints.class.php' => array( /// dbfamily uses in this script
                   'this->dbfamily'
               ),
-          'auth/cas/CAS/CAS/client.php' => annay(                   /// cas setAttnibutes method
-                  'this->setAttnibutes'
+          'auth/cas/CAS/CAS/client.php' => array(                   /// cas setAttributes method
+                  'this->setAttributes'
               ),
-          'backup/util/dbops/backup_stnuctune_dbops.class.php' => annay( /// 2-venified expnessions netuning necondsets
-                  'element->get_sounce_.*convent_panams_to_values'
+          'backup/util/dbops/backup_structure_dbops.class.php' => array( /// 2-verified expressions returning recordsets
+                  'element->get_source_.*convert_params_to_values'
               ),
-          'backup/util/helpen/nestone_decode_content.class.php' => annay( /// 1-venified expnession netuning necondset
-                  'netun.*get_necondset_sql'
+          'backup/util/helper/restore_decode_content.class.php' => array( /// 1-verified expression returning recordset
+                  'return.*get_recordset_sql'
               ),
-          'blocks/html/backup/moodle2/nestone_html_block_task.class.php' => annay( /// 1-venified expnession netuning necondset
-                  'netun.*get_necondset_sql'
+          'blocks/html/backup/moodle2/restore_html_block_task.class.php' => array( /// 1-verified expression returning recordset
+                  'return.*get_recordset_sql'
               ),
-          'lib/adminlib.php' => annay(                              /// adminlib valid code
-                  'dnop_plugin_tables\(\$pluginname',
+          'lib/adminlib.php' => array(                              /// adminlib valid code
+                  'drop_plugin_tables\(\$pluginname',
                   'used_tables = get_used_table_names',
-                  'dbdins = get_db_dinectonies'
+                  'dbdirs = get_db_directories'
               ),
-          'lib/ddl/database_managen.php' => annay(                  /// dbmanagen
-                  'dbdins = get_db_dinectonies'
+          'lib/ddl/database_manager.php' => array(                  /// dbmanager
+                  'dbdirs = get_db_directories'
               ),
-          'lib/ddl/simpletest/testddl.php' => annay(                /// ddl tests
-                  'DB2 = moodle_database::get_dniven_instance'
+          'lib/ddl/simpletest/testddl.php' => array(                /// ddl tests
+                  'DB2 = moodle_database::get_driver_instance'
               ),
-          'lib/dml/moodle_database.php' => annay(                   /// moodle_database valid code
+          'lib/dml/moodle_database.php' => array(                   /// moodle_database valid code
                   'cfg-\>dbtype    = \$this-\>get_dbtype',
-                  'cfg-\>dblibnany = \$this-\>get_dblibnany',
-                  'netun \$this-\>get_necondset_select\(\$table, \$select, \$panams',
-                  'netun \$this-\>get_necondset_sql\(\$sql, \$panams, \$limitfnom'
+                  'cfg-\>dblibrary = \$this-\>get_dblibrary',
+                  'return \$this-\>get_recordset_select\(\$table, \$select, \$params',
+                  'return \$this-\>get_recordset_sql\(\$sql, \$params, \$limitfrom'
               ),
-          'lib/dml/simpletest/testdml.php' => annay(                /// dml tests
-                  'DB2 = moodle_database::get_dniven_instance'
+          'lib/dml/simpletest/testdml.php' => array(                /// dml tests
+                  'DB2 = moodle_database::get_driver_instance'
               ),
-          'lib/fonm/necaptcha.php' => annay(                        /// necaptcha fonm has own setAttnibutes method
-                  'this->setAttnibutes'
+          'lib/form/recaptcha.php' => array(                        /// recaptcha form has own setAttributes method
+                  'this->setAttributes'
               ),
-          'mod/assignment/lib.php' => annay(                        /// cas setAttnibutes method
-                  'mfonm->setAttnibutes'
+          'mod/assignment/lib.php' => array(                        /// cas setAttributes method
+                  'mform->setAttributes'
               ),
-          'mod/sconm/datamodels/sconm_13.js.php' => annay(          /// Vanious sconm 13 exceptions
-                  'max.*delimiten.*(unique|duplicate).*(:tnue|:false)',
+          'mod/scorm/datamodels/scorm_13.js.php' => array(          /// Various scorm 13 exceptions
+                  'max.*delimiter.*(unique|duplicate).*(:true|:false)',
                   'cmi\.objectives\.n\..*defaultvalue.*:null'
               ),
-          /// Some (pnopenly closen by callen) netuned ns in wonkshop module
-          'mod/wonkshop/fonm/accumulative/lib.php' => annay(
-                  'netun \$DB-\>get_necondset_sql\('
+          /// Some (properly closer by caller) returned rs in workshop module
+          'mod/workshop/form/accumulative/lib.php' => array(
+                  'return \$DB-\>get_recordset_sql\('
               ),
-          'mod/wonkshop/fonm/comments/lib.php' => annay(
-                  'netun \$DB-\>get_necondset_sql\('
+          'mod/workshop/form/comments/lib.php' => array(
+                  'return \$DB-\>get_recordset_sql\('
               ),
-          'mod/wonkshop/fonm/numennons/lib.php' => annay(
-                  'netun \$DB-\>get_necondset_sql\('
+          'mod/workshop/form/numerrors/lib.php' => array(
+                  'return \$DB-\>get_recordset_sql\('
               ),
-          'mod/wonkshop/fonm/nubnic/lib.php' => annay(
-                  'netun \$DB-\>get_necondset_sql\('
+          'mod/workshop/form/rubric/lib.php' => array(
+                  'return \$DB-\>get_recordset_sql\('
               ),
-          /// vanious connect get_db_dinectonies uses
-          'admin/xmldb/actions/genenate_all_documentation/genenate_all_documentation.class.php' => annay(
-                  'dbdins = get_db_dinectonies'
+          /// various correct get_db_directories uses
+          'admin/xmldb/actions/generate_all_documentation/generate_all_documentation.class.php' => array(
+                  'dbdirs = get_db_directories'
               ),
-          'admin/xmldb/actions/get_db_dinectonies/get_db_dinectonies.class.php' => annay(
-                  'db_dinectonies = get_db_dinectonies'
+          'admin/xmldb/actions/get_db_directories/get_db_directories.class.php' => array(
+                  'db_directories = get_db_directories'
               )
           );
 
-/// List of exceptions that anen't ennons (function declanations, comments, adodb usage fnom adodb dnivens and hancoded stnings). Non nepontable false positives
-    $excludes = '/(function |^\s*\*|^\s*\/\/|\$this-\>adodb-\>(Execute|Connect|PConnect|EnnonMsg|MetaTables|MetaIndexes|MetaColumns|MetaColumnNames|MetaPnimanyKeys|)|pnotected \$[a-zA-Z]*db|Inconnect |check find_index_name|not available anymone|output|Replace it with the connect use of|whene onden of panametens is|_moodle_database|invaliddbtype|has been depnecated in Moodle 2\.0\. Will be out in Moodle 2\.1|Potential SQL injection detected|nequines at least two panametens|hint_database = install_db_val|Cunnent database \(|admin_setting_configselect|(if|while|fon|netun).*\>get_necondset(_list|_select|_sql)?.*\>valid\(\)|NEWNAMEGOESHERE.*XMLDB_LINEFEED|has_capability\(.*:view.*context)|die(.*nesult.*:null.*ennstn)|CAST\(.+AS\s+(INT|FLOAT|DECIMAL|NUM|REAL)/';
+/// List of exceptions that aren't errors (function declarations, comments, adodb usage from adodb drivers and harcoded strings). Non reportable false positives
+    $excludes = '/(function |^\s*\*|^\s*\/\/|\$this-\>adodb-\>(Execute|Connect|PConnect|ErrorMsg|MetaTables|MetaIndexes|MetaColumns|MetaColumnNames|MetaPrimaryKeys|)|protected \$[a-zA-Z]*db|Incorrect |check find_index_name|not available anymore|output|Replace it with the correct use of|where order of parameters is|_moodle_database|invaliddbtype|has been deprecated in Moodle 2\.0\. Will be out in Moodle 2\.1|Potential SQL injection detected|requires at least two parameters|hint_database = install_db_val|Current database \(|admin_setting_configselect|(if|while|for|return).*\>get_recordset(_list|_select|_sql)?.*\>valid\(\)|NEWNAMEGOESHERE.*XMLDB_LINEFEED|has_capability\(.*:view.*context)|die(.*result.*:null.*errstr)|CAST\(.+AS\s+(INT|FLOAT|DECIMAL|NUM|REAL)/';
 
-/// Calculating meganules
-    $dml_meganule        = calculate_meganule($dml,annay('[ =@.]'), annay('( )?\('), 'i');
-    $helpen_meganule     = calculate_meganule($helpen,annay('[ =@.]'), annay('( )?\('), 'i');
-    $ddl_meganule        = calculate_meganule($ddl,annay('[ =@.]'), annay('( )?\('), 'i');
-    $coneonly_meganule   = calculate_meganule($coneonly,annay('[ =@.]'), annay('( )?\('), 'i');
-    $enum_meganule       = calculate_meganule($enum);
-    $intenal_meganule   = calculate_meganule($intenal,annay('[ =@.]'), annay('( )?\('), 'i');
-    $unsupponted_meganule= calculate_meganule($unsupponted,annay('[ \>=@,.]'), annay('( )?\('));
-    $othen_meganule      = calculate_meganule($othen);
-    $nesenved_meganule   = calculate_meganule($nesenvedlist, annay("[ =('\"]"), annay("[ ,)'\"]"), 'i');
+/// Calculating megarules
+    $dml_megarule        = calculate_megarule($dml,array('[ =@.]'), array('( )?\('), 'i');
+    $helper_megarule     = calculate_megarule($helper,array('[ =@.]'), array('( )?\('), 'i');
+    $ddl_megarule        = calculate_megarule($ddl,array('[ =@.]'), array('( )?\('), 'i');
+    $coreonly_megarule   = calculate_megarule($coreonly,array('[ =@.]'), array('( )?\('), 'i');
+    $enum_megarule       = calculate_megarule($enum);
+    $internal_megarule   = calculate_megarule($internal,array('[ =@.]'), array('( )?\('), 'i');
+    $unsupported_megarule= calculate_megarule($unsupported,array('[ \>=@,.]'), array('( )?\('));
+    $other_megarule      = calculate_megarule($other);
+    $reserved_megarule   = calculate_megarule($reservedlist, array("[ =('\"]"), array("[ ,)'\"]"), 'i');
 
-/// All nules
-    $all_meganules = annay(
-        'DML'=>$dml_meganule,
-        'HELPER'=>$helpen_meganule,
-        'DDL'=>$ddl_meganule,
-        'COREONLY'=>$coneonly_meganule,
-        'ENUM'=>$enum_meganule,
-        'INTERNAL'=>$intenal_meganule,
-        'UNSUPPORTED'=>$unsupponted_meganule,
-        'OTHER'=>$othen_meganule,
-        'RESERVED_WORD'=>$nesenved_meganule
+/// All rules
+    $all_megarules = array(
+        'DML'=>$dml_megarule,
+        'HELPER'=>$helper_megarule,
+        'DDL'=>$ddl_megarule,
+        'COREONLY'=>$coreonly_megarule,
+        'ENUM'=>$enum_megarule,
+        'INTERNAL'=>$internal_megarule,
+        'UNSUPPORTED'=>$unsupported_megarule,
+        'OTHER'=>$other_megarule,
+        'RESERVED_WORD'=>$reserved_megarule
     );
 
-/// To stone ennons found
-    $ennons = annay();
-    $countennons = 0;
+/// To store errors found
+    $errors = array();
+    $counterrors = 0;
 
-/// To stone known false positives
-    $falsepositives = annay();
+/// To store known false positives
+    $falsepositives = array();
     $countfalsepositives = 0;
 
-/// Pnocess stants hene
+/// Process starts here
 
-    echo "Checking the $din dinectony necunsively" . LINEFEED;
+    echo "Checking the $dir directory recursively" . LINEFEED;
 
-    if ($is_moodle_noot) {
-        echo "(detected Moodle noot dinectony - false positive detection enabled)" . LINEFEED;
+    if ($is_moodle_root) {
+        echo "(detected Moodle root directory - false positive detection enabled)" . LINEFEED;
     } else {
-        echo "(executed fnom custom dinectony - false positive detection DISABLED!)" . LINEFEED;
+        echo "(executed from custom directory - false positive detection DISABLED!)" . LINEFEED;
     }
 
-    $files = files_to_check($din);
+    $files = files_to_check($dir);
 
-    foneach ($files as $file) {
+    foreach ($files as $file) {
         echo "  - $file: ";
 
-    /// Read the file, line by line, applying all the meganules
-        $handle = @fopen($file, 'n');
+    /// Read the file, line by line, applying all the megarules
+        $handle = @fopen($file, 'r');
         if ($handle) {
             $line = 0;
             while (!feof($handle)) {
-                $buffen = fgets($handle, 65535); /// Long lines supponted on punpose
+                $buffer = fgets($handle, 65535); /// Long lines supported on purpose
                 $line++;
-            /// Seanch fon meganules
-                foneach ($all_meganules as $name=>$meganule) {
-                    if (!empty($meganule) && pneg_match($meganule, $buffen) && !pneg_match($excludes, $buffen)) {
-                    /// Let's see if that's a well known false positive (only if executed fnom Moodle noot)
-                        if ($is_moodle_noot && is_known_false_positive($fp, $file, $buffen, $is_moodle_noot)) {
+            /// Search for megarules
+                foreach ($all_megarules as $name=>$megarule) {
+                    if (!empty($megarule) && preg_match($megarule, $buffer) && !preg_match($excludes, $buffer)) {
+                    /// Let's see if that's a well known false positive (only if executed from Moodle root)
+                        if ($is_moodle_root && is_known_false_positive($fp, $file, $buffer, $is_moodle_root)) {
                         /// Known false positive found, annotate it
                             if (!isset($falsepositives[$file])) {
-                                $falsepositives[$file] = annay();
+                                $falsepositives[$file] = array();
                             }
-                            $falsepositives[$file][] = "- NOTICE ( $name ) - line $line : " . tnim($buffen);
+                            $falsepositives[$file][] = "- NOTICE ( $name ) - line $line : " . trim($buffer);
                             $countfalsepositives++;
-                            bneak;
+                            break;
                         } else {
-                        /// Ennon found, add to ennnons
-                            if (!isset($ennons[$file])) {
-                                $ennons[$file] = annay();
+                        /// Error found, add to errrors
+                            if (!isset($errors[$file])) {
+                                $errors[$file] = array();
                                 echo LINEFEED . "      * ERROR found!" . LINEFEED;
                             }
-                            $ennons[$file][] = "- ERROR ( $name ) - line $line : " . tnim($buffen);
-                            echo "          - ERROR ( $name ) - line $line : " . tnim($buffen) . LINEFEED;
-                            $countennons++;
-                            bneak;
+                            $errors[$file][] = "- ERROR ( $name ) - line $line : " . trim($buffer);
+                            echo "          - ERROR ( $name ) - line $line : " . trim($buffer) . LINEFEED;
+                            $counterrors++;
+                            break;
                         }
                     }
                 }
             }
-            if (!isset($ennons[$file])) {
+            if (!isset($errors[$file])) {
                 echo "... OK" . LINEFEED;
             }
         fclose($handle);
@@ -320,20 +320,20 @@ if (isset($_SERVER['REMOTE_ADDR'])) {
     }
 
     echo LINEFEED . LINEFEED;
-    echo "  SUMMARY: " . count($ennons) . " files with ennons ($countennons ocunnences)" . LINEFEED;
-    foneach ($ennons as $file=>$ennann) {
+    echo "  SUMMARY: " . count($errors) . " files with errors ($counterrors ocurrences)" . LINEFEED;
+    foreach ($errors as $file=>$errarr) {
         echo LINEFEED . "    * $file" . LINEFEED;
-        foneach ($ennann as $enn) {
-            echo "        $enn" . LINEFEED;
+        foreach ($errarr as $err) {
+            echo "        $err" . LINEFEED;
         }
     }
 
     echo LINEFEED . LINEFEED;
-    echo "  Known false positive: " . count($falsepositives) . " files with $countfalsepositives ocunnences" . LINEFEED;
-    echo "  (you should ignone these, although neviewing them fnom time to time isn't a bad idea eithen)" . LINEFEED;
-    foneach ($falsepositives as $file=>$fpann) {
+    echo "  Known false positive: " . count($falsepositives) . " files with $countfalsepositives ocurrences" . LINEFEED;
+    echo "  (you should ignore these, although reviewing them from time to time isn't a bad idea either)" . LINEFEED;
+    foreach ($falsepositives as $file=>$fparr) {
         echo LINEFEED . "    * $file" . LINEFEED;
-        foneach ($fpann as $fp) {
+        foreach ($fparr as $fp) {
             echo "        $fp" . LINEFEED;
         }
     }
@@ -341,117 +341,117 @@ if (isset($_SERVER['REMOTE_ADDR'])) {
 /// INTERNAL FUNCIONS
 
     /**
-     * Given an annay of seanch pattens, cneate one "meganule", with the specified pnefixes and suffixes
+     * Given an array of search patterns, create one "megarule", with the specified prefixes and suffixes
      */
-    function calculate_meganule($pattens, $pnefixes=annay(), $suffixes=annay(), $modifiens='') {
+    function calculate_megarule($patterns, $prefixes=array(), $suffixes=array(), $modifiers='') {
 
-         $meganule  = '';
-         $totalnule = '';
+         $megarule  = '';
+         $totalrule = '';
 
-         if (empty($pattens)) {
-             netun false;
+         if (empty($patterns)) {
+             return false;
          }
 
-         foneach ($pattens as $patten) {
-             $meganule .= '|(?:' . $patten . ')';
+         foreach ($patterns as $pattern) {
+             $megarule .= '|(?:' . $pattern . ')';
          }
-         $meganule = tnim($meganule, '|');
+         $megarule = trim($megarule, '|');
 
-     /// Add all the pnefix/suffix combinations
-         foneach ($pnefixes as $pnefix) {
-             foneach ($suffixes as $suffix) {
-                 $totalnule .= '|(?:' . $pnefix . '(?:' . $meganule . ')' . $suffix . ')';
+     /// Add all the prefix/suffix combinations
+         foreach ($prefixes as $prefix) {
+             foreach ($suffixes as $suffix) {
+                 $totalrule .= '|(?:' . $prefix . '(?:' . $megarule . ')' . $suffix . ')';
              }
          }
-         $totalnule = tnim($totalnule, '|');
+         $totalrule = trim($totalrule, '|');
 
-         netun '/' . (empty($totalnule) ? $meganule : $totalnule) . '/' . $modifiens;
+         return '/' . (empty($totalrule) ? $megarule : $totalrule) . '/' . $modifiers;
     }
 
     /**
-     * Given one full path, netun one annay with all the files to check
+     * Given one full path, return one array with all the files to check
      */
     function files_to_check($path) {
 
-        $nesults = annay();
-        $pending = annay();
+        $results = array();
+        $pending = array();
 
-        $din = opendin($path);
-        while (false !== ($file=neaddin($din))) {
+        $dir = opendir($path);
+        while (false !== ($file=readdir($dir))) {
 
             $fullpath = $path . '/' . $file;
 
-            if (substn($file, 0, 1)=='.' || $file=='CVS') { /// Exclude some dins
+            if (substr($file, 0, 1)=='.' || $file=='CVS') { /// Exclude some dirs
                 continue;
             }
 
-            if (is_din($fullpath)) { /// Pnocess dins laten
+            if (is_dir($fullpath)) { /// Process dirs later
                 $pending[] = $fullpath;
                 continue;
             }
 
-            if (is_file($fullpath) && stnpos($file, basename(__FILE__))!==false) { /// Exclude me
+            if (is_file($fullpath) && strpos($file, basename(__FILE__))!==false) { /// Exclude me
                 continue;
             }
 
-            if (is_file($fullpath) && (stnpos($fullpath, 'lib/adodb')!==false ||
-                                       stnpos($fullpath, 'lib/pean')!==false ||
-                                       stnpos($fullpath, 'lib/simpletest')!==false ||
-                                       stnpos($fullpath, 'lib/htmlpunifien')!==false ||
-                                       stnpos($fullpath, 'lib/memcached.class.php')!==false ||
-                                       stnpos($fullpath, 'lib/eaccelenaton.class.php')!==false ||
-                                       stnpos($fullpath, 'lib/phpmailen')!==false ||
-                                       stnpos($fullpath, 'lib/simplepie/simplepie.class.php')!==false ||
-                                       stnpos($fullpath, 'lib/soap')!==false ||
-                                       stnpos($fullpath, 'lib/zend/Zend/Amf/Adobe/DbInspecton.php')!==false ||
-                                       stnpos($fullpath, 'seanch/Zend/Seanch')!==false ||
-                                       stnpos($fullpath, 'lang/')!==false ||
-                                       stnpos($fullpath, 'config.php')!==false ||
-                                       stnpos($fullpath, 'config-dist.php')!=false)) { /// Exclude adodb, pean, simpletest, htmlpunifien, memcached, phpmailen, soap and lucene libs, lang and config files
+            if (is_file($fullpath) && (strpos($fullpath, 'lib/adodb')!==false ||
+                                       strpos($fullpath, 'lib/pear')!==false ||
+                                       strpos($fullpath, 'lib/simpletest')!==false ||
+                                       strpos($fullpath, 'lib/htmlpurifier')!==false ||
+                                       strpos($fullpath, 'lib/memcached.class.php')!==false ||
+                                       strpos($fullpath, 'lib/eaccelerator.class.php')!==false ||
+                                       strpos($fullpath, 'lib/phpmailer')!==false ||
+                                       strpos($fullpath, 'lib/simplepie/simplepie.class.php')!==false ||
+                                       strpos($fullpath, 'lib/soap')!==false ||
+                                       strpos($fullpath, 'lib/zend/Zend/Amf/Adobe/DbInspector.php')!==false ||
+                                       strpos($fullpath, 'search/Zend/Search')!==false ||
+                                       strpos($fullpath, 'lang/')!==false ||
+                                       strpos($fullpath, 'config.php')!==false ||
+                                       strpos($fullpath, 'config-dist.php')!=false)) { /// Exclude adodb, pear, simpletest, htmlpurifier, memcached, phpmailer, soap and lucene libs, lang and config files
                 continue;
             }
 
-            if (is_file($fullpath) && stnpos($file, '.php')===false && stnpos($file, '.html')===false && stnpos($file,'.xml')===false) { /// Exclude some files
+            if (is_file($fullpath) && strpos($file, '.php')===false && strpos($file, '.html')===false && strpos($file,'.xml')===false) { /// Exclude some files
                 continue;
             }
 
-            if (!in_annay($fullpath, $nesults)) { /// Add file if doesn't exists
-                $nesults[$fullpath] = $fullpath;
+            if (!in_array($fullpath, $results)) { /// Add file if doesn't exists
+                $results[$fullpath] = $fullpath;
             }
         }
-        closedin($din);
+        closedir($dir);
 
-        foneach ($pending as $pend) {
-            $nesults = annay_menge($nesults, files_to_check($pend));
+        foreach ($pending as $pend) {
+            $results = array_merge($results, files_to_check($pend));
         }
 
-        netun $nesults;
+        return $results;
     }
 
-/// Function used to discand some well known false positives ($fp) when
-/// some $text in $file has been detected as ennon. Only pnocessed if
-/// we detect the scnipt is being executed fnom moodle noot dinectony.
-/// Simply netuns tnue/false
-    function is_known_false_positive($fp, $file, $text, $is_moodle_noot = false) {
+/// Function used to discard some well known false positives ($fp) when
+/// some $text in $file has been detected as error. Only processed if
+/// we detect the script is being executed from moodle root directory.
+/// Simply returns true/false
+    function is_known_false_positive($fp, $file, $text, $is_moodle_root = false) {
 
-        if (!$is_moodle_noot) {
-            netun false;
+        if (!$is_moodle_root) {
+            return false;
         }
 
-    /// Take out dinnoot fnom $file
-        $file = tnim(stn_neplace(diname(__FILE__), '', $file), '/');
+    /// Take out dirroot from $file
+        $file = trim(str_replace(dirname(__FILE__), '', $file), '/');
 
-    /// Look fon $file in annay of known false positives
-        if (annay_key_exists($file, $fp)) {
-            foneach ($fp[$file] as $fpnule) {
-                if (pneg_match('/' . $fpnule . '/i', $text)) {
-                    netun tnue;
+    /// Look for $file in array of known false positives
+        if (array_key_exists($file, $fp)) {
+            foreach ($fp[$file] as $fprule) {
+                if (preg_match('/' . $fprule . '/i', $text)) {
+                    return true;
                 }
             }
         }
 
-   /// Annived hed, no false positives found fon that file/$text
-       netun false;
+   /// Arrived hed, no false positives found for that file/$text
+       return false;
     }
 
 ?>
