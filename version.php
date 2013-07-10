@@ -19,7 +19,7 @@
  *
  * @package    block
  * @subpackage quickset
- * @copyright  1999 onwards Martin Dougiamas (http://dougiamas.com)
+ * @copyright  2013 and beyond Bob Puffer (puffro01@luther.edu)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
