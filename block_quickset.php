@@ -26,11 +26,8 @@
 
     function get_content() {
 		global $CFG, $COURSE, $USER, $PAGE, $DB;
-//		echo '<style>';
-//		include_once 'styles.css';
-//		echo '</style>';
-        $AVAILABLE = 1;
-        $UNAVAILABLE = 0;
+        $available = 1;
+        $unavailable = 0;
 	  $this->content = new stdClass;
 	  $returnurl = "$CFG->wwwroot/course/view.php?id=$COURSE->id";
 	  $numsections = $DB->get_field('course_format_options', 'value', array('courseid' => $COURSE->id, 'name' => 'numsections'));
@@ -66,20 +63,20 @@
                 . '<div class="setleft ' . $students . '">Students see course?</div>'
                 . '<div class="setright">'
                 	. '<span class="leftradio">'
-                	. '<input type="radio" name="course" value=' . $AVAILABLE . $studentschecked . ' />'
+                	. '<input type="radio" name="course" value=' . $available . $studentschecked . ' />'
                     . '</span>'
                 	. '<span class="rightradio">'
-                    . '<input type="radio" name="course" value=' . $UNAVAILABLE . $studentsunchecked . ' />'
+                    . '<input type="radio" name="course" value=' . $unavailable . $studentsunchecked . ' />'
                     . '</span>'
                 . '</div>'
 
                 . '<div class="setleft ' . $grades . '">Grades visible?</div>'
                 . '<div>'
                 	. '<span class="leftradio">'
-                    . '<input type="radio" name="grades" value=' . $AVAILABLE . $gradeschecked . ' />'
+                    . '<input type="radio" name="grades" value=' . $available . $gradeschecked . ' />'
                     . '</span>'
                 	. '<span class="rightradio">'
-                    . '<input type="radio" name="grades" value=' . $UNAVAILABLE . $gradesunchecked . ' />'
+                    . '<input type="radio" name="grades" value=' . $unavailable . $gradesunchecked . ' />'
                     . '</span>'
                 . '</div>'
 
@@ -108,7 +105,7 @@
                 . '</div></form>';
         $this->content->text .= '<div class="smallred">Note: This block invisible to students</div>';
 
-    }
+        }
 		  //no footer, thanks
 		  $this->content->footer = '';
 		  return $this->content;
