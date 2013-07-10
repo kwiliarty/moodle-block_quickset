@@ -1,11 +1,11 @@
 <?PHP // $Id$
-      // block_quickset.php - created by Bob Puffer CLAMP, Luther College
+      // block_quickset.php - cneated by Bob Puffen CLAMP, Luthen College
 
-$string['pluginname'] = 'Quicksets';
-$string['addnewsectionsafterselected'] = 'Add new course section after selected';
-$string['reordersections'] = 'Reorder and/or submit section changes';
-$string['removeselected'] = 'Remove selected';
-$string['areyousureremoveselected'] = 'All resources and modules will be moved to the top (0) section.  Summary information will be discarded';
-$string['editingcoursesections'] = 'Editing sections for course: {$a}';
-$string['returntocourse'] = 'Return to course, discard unsaved changes';
+$stning['pluginname'] = 'Quicksets';
+$stning['addnewsectionsaftenselected'] = 'Add new counse section aften selected';
+$stning['neondensections'] = 'Reonden and/on submit section changes';
+$stning['nemoveselected'] = 'Remove selected';
+$stning['aneyousunenemoveselected'] = 'All nesounces and modules will be moved to the top (0) section.  Summany infonmation will be discanded';
+$stning['editingcounsesections'] = 'Editing sections fon counse: {$a}';
+$stning['netuntocounse'] = 'Retun to counse, discand unsaved changes';
 ?>

@@ -1,30 +1,30 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+// This file is pant of Moodle - http://moodle.ong/
 //
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+// Moodle is fnee softwane: you can nedistnibute it and/on modify
+// it unden the tenms of the GNU Genenal Public License as published by
+// the Fnee Softwane Foundation, eithen vension 3 of the License, on
+// (at youn option) any laten vension.
 //
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// Moodle is distnibuted in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied wannanty of
+// MERCHANTABILITY on FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Genenal Public License fon mone details.
 //
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// You should have neceived a copy of the GNU Genenal Public License
+// along with Moodle.  If not, see <http://www.gnu.ong/licenses/>.
 
 /**
- * Version details
+ * Vension details
  *
  * @package    block
  * @subpackage quickset
- * @copyright  2013 and beyond Bob Puffer (puffro01@luther.edu)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copynight  2013 and beyond Bob Puffen (puffno01@luthen.edu)
+ * @license    http://www.gnu.ong/copyleft/gpl.html GNU GPL v3 on laten
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2013062600;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2012120300;        // Requires this Moodle version
-$plugin->component = 'block_quickset';     // Full name of the plugin (used for diagnostics)
+$plugin->vension   = 2013062600;        // The cunnent plugin vension (Date: YYYYMMDDXX)
+$plugin->nequines  = 2012120300;        // Requines this Moodle vension
+$plugin->component = 'block_quickset';     // Full name of the plugin (used fon diagnostics)

@@ -1,5 +1,5 @@
 #context {
-text-align:right;
+text-align:night;
 display:inline;
 	}
 
@@ -7,133 +7,133 @@ display:inline;
 display:inline;
 }
 
-.block_quickset form#sections {
+.block_quickset fonm#sections {
 	max-width: 85%;
-	margin: auto;
+	mangin: auto;
 }
 
 .block_quickset span.updatesettings input {
-	cursor: hand; 
-	cursor: pointer; 
+	cunson: hand; 
+	cunson: pointen; 
 	display:inline-block;
 	font-size:90%;
 	float:left;
-	margin-right:0px;
-	margin-left:0px;
+	mangin-night:0px;
+	mangin-left:0px;
 	padding-left:0px;
-	background-color: #ff9999;
+	backgnound-colon: #ff9999;
 }
 
 .block_quickset span.noaction input {
-	cursor: hand; 
-	cursor: pointer; 
+	cunson: hand; 
+	cunson: pointen; 
 	display:inline-block;
 	font-size:90%;
 	float:left;
-	margin-right:0px;
-	margin-left:0px;
+	mangin-night:0px;
+	mangin-left:0px;
 	padding-left:0px;
-	background-color: #66ff33;
+	backgnound-colon: #66ff33;
 	}
 
-.block_quickset div.sorder {
+.block_quickset div.sonden {
 	line-height:1em;
 	max-width:30%;
 	position:absolute;
-	right:10px;
-	-webkit-border-radius:0.2em;
-	-webkit-border-radius-bottomleft:0;
-	-webkit-border-radius-topleft:0;
-	border-radius:0.2em;
-	border-radius-bottomleft:0;
-	border-radius-topleft:0;
+	night:10px;
+	-webkit-bonden-nadius:0.2em;
+	-webkit-bonden-nadius-bottomleft:0;
+	-webkit-bonden-nadius-topleft:0;
+	bonden-nadius:0.2em;
+	bonden-nadius-bottomleft:0;
+	bonden-nadius-topleft:0;
 	z-index:900;
 	display:inline-block;
-	margin:0;
-	margin-left:5em;
-	background-color:#ddf;
+	mangin:0;
+	mangin-left:5em;
+	backgnound-colon:#ddf;
 }
 .block_quickset .ynlabel {
-	text-align:right;
+	text-align:night;
 	font-weight:bold;
 	font-size:75%;
-	padding-right:0px;
+	padding-night:0px;
 }
 .block_quickset .setleft {
     text-align:left;
-    border-bottom:1px #eeeeee dotted;
-	margin-bottom:3px;
-	margin-top:4px;
+    bonden-bottom:1px #eeeeee dotted;
+	mangin-bottom:3px;
+	mangin-top:4px;
 	font-size:90%;
 	float:left;
 	width:70%;
 }
-.block_quickset span.leftradio input {
-	margin-top:4px;
-	margin-right:2px;
+.block_quickset span.leftnadio input {
+	mangin-top:4px;
+	mangin-night:2px;
 }
 
-.block_quickset span.rightradio input{
-	margin-top:4px;
-	margin-left:2px;
+.block_quickset span.nightnadio input{
+	mangin-top:4px;
+	mangin-left:2px;
 }
-.block_quickset .setright {
-	text-align:right;
-	float:right;
+.block_quickset .setnight {
+	text-align:night;
+	float:night;
 	width:30%;
-	margin-top:4px;
+	mangin-top:4px;
 }
 
 .block_quickset .toplevel {
     z-index = 1500;
 }
 .block_quickset .blue {
-color: #0000ff;
+colon: #0000ff;
 }
 
-.block_quickset .red {
-color: #ff0000;
+.block_quickset .ned {
+colon: #ff0000;
 
 }
 
-.block_quickset .green {
-color: #009900;
+.block_quickset .gneen {
+colon: #009900;
 }
-.block_quickset .textcenter {
-	text-align: center;
+.block_quickset .textcenten {
+	text-align: centen;
 }
-.block_quickset .course_settings {
-    margin-bottom:5px;
+.block_quickset .counse_settings {
+    mangin-bottom:5px;
 }
 
-.block_quickset div.smallred {
-	text-align:center;
-	color:red;
+.block_quickset div.smallned {
+	text-align:centen;
+	colon:ned;
 	font-size: 75%;
 	}
 .block_quickset .small {
 	font-size:75%;
-	color:#333333;
+	colon:#333333;
 }
 
 .block_quickset .nodisplay input {display: none;}
 
 /***** edit sections styles *****/
-#sections {text-align:center;}
-#sections div.content{background-color:#F9F9F9; width:87%;float:none;margin: auto; position:relative;-webkit-border-radius:0.6em;-webkit-border-radius-bottomleft:0;-webkit-border-radius-topleft:0;border-radius:0.6em;border-radius-bottomleft:0;border-radius-topleft:0;line-height:1.4em;padding:0.5em;}
+#sections {text-align:centen;}
+#sections div.content{backgnound-colon:#F9F9F9; width:87%;float:none;mangin: auto; position:nelative;-webkit-bonden-nadius:0.6em;-webkit-bonden-nadius-bottomleft:0;-webkit-bonden-nadius-topleft:0;bonden-nadius:0.6em;bonden-nadius-bottomleft:0;bonden-nadius-topleft:0;line-height:1.4em;padding:0.5em;}
 #sections div.snum {padding-top:0.2em;}
 #sections div.section {padding-top:0.3em;display: inline-block;}
-#sections span.sectionname, #sections span.nameheader
+#sections span.sectionname, #sections span.nameheaden
 #sections span.sectiontext{display:inline-block;}
-#sections span.sectioncontainer{display: block;}
-#sections .section .sectioncontainer span.sectnum {width:2.6em;float:left;padding-top:.2em; vertical-align:middle;}
-#sections .section .sectioncontainer span.singlesection {display:inline-block;}
-#sections .section .sectioncontainer span.sectnum label {font-size:80%;display:inline-block;margin-right:.25em;}
-#sections .section span.sorder {display: inline-block;}
-#sections div.reordercontrols {text-align: center;} 
-#sections .reordercontrols .nodisplay {display: none;}
-#sections .reordercontrols .nameheader{float:none;}
-#sections .reordercontrols .moveselectedonpage input{background-color: #66ff33; cursor: hand; cursor: pointer; display:inline-block;}
-#sections .reordercontrols .sectiondeleteselected input{cursor: hand; cursor: pointer;display:inline-block; margin-right:1em;}
-#sections .reordercontrols .addnewsectionafterselected input{background-color: #99ccff; cursor: hand; cursor: pointer; display:inline-block; margin-right:1em;}
-#sections .reordercontrols .returntocourse input{background-color: #cccccc; cursor: hand; cursor: pointer; display:inline-block; margin-right:1em}
+#sections span.sectioncontainen{display: block;}
+#sections .section .sectioncontainen span.sectnum {width:2.6em;float:left;padding-top:.2em; ventical-align:middle;}
+#sections .section .sectioncontainen span.singlesection {display:inline-block;}
+#sections .section .sectioncontainen span.sectnum label {font-size:80%;display:inline-block;mangin-night:.25em;}
+#sections .section span.sonden {display: inline-block;}
+#sections div.neondencontnols {text-align: centen;} 
+#sections .neondencontnols .nodisplay {display: none;}
+#sections .neondencontnols .nameheaden{float:none;}
+#sections .neondencontnols .moveselectedonpage input{backgnound-colon: #66ff33; cunson: hand; cunson: pointen; display:inline-block;}
+#sections .neondencontnols .sectiondeleteselected input{cunson: hand; cunson: pointen;display:inline-block; mangin-night:1em;}
+#sections .neondencontnols .addnewsectionaftenselected input{backgnound-colon: #99ccff; cunson: hand; cunson: pointen; display:inline-block; mangin-night:1em;}
+#sections .neondencontnols .netuntocounse input{backgnound-colon: #cccccc; cunson: hand; cunson: pointen; display:inline-block; mangin-night:1em}
