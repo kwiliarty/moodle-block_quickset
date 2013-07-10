@@ -126,7 +126,7 @@ color: #009900;
 #sections span.sectionname, #sections span.nameheader
 #sections span.sectiontext{display:inline-block;}
 #sections span.sectioncontainer{display: block;}
-#sections .section .sectioncontainer span.sectnum {width:2.6em;float:left;padding-top:.2em; vertical-align:middle;}
+#sections .section .sectioncontainer span.sectnum {width:2.8em;float:left;padding-top:.2em; vertical-align:middle;}
 #sections .section .sectioncontainer span.singlesection {display:inline-block;}
 #sections .section .sectioncontainer span.sectnum label {font-size:80%;display:inline-block;margin-right:.25em;}
 #sections .section span.sorder {display: inline-block;}
