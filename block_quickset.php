@@ -45,7 +45,7 @@ class block_quickset extends block_base {
         $unavailable = 0;
         $this->content = new stdClass;
         $returnurl = "$CFG->wwwroot/course/view.php?id=$COURSE->id";
-        $numsections = $DB->get_field('course_format_options', 'value', array('courseid' => $COURSE->id, 'name' => 'numsections'));
+        $numsections = $DB->get_field('course_format_options', 'value', array('courseid' => $COURSE->id, 'name' => 'numsections', 'format' => $COURSE->format));
 
         $context = get_context_instance(CONTEXT_COURSE, $COURSE->id);
         if (has_capability('moodle/course:update', $context)) {
@@ -97,7 +97,7 @@ class block_quickset extends block_base {
 
                     . '<div class="setleft blue toplevel" >Visible sections </div>'
                     . '<div class="setright">'
-                        . '<input type="text" name="number" size="2" value="'.$numsections.'"/>'
+                        . '<input type="text" class="numsections" name="number" value="'.$numsections.'"/>'
                     . '</div>'
 
                     . '<br /><br />'
@@ -129,6 +129,4 @@ class block_quickset extends block_base {
     function specialisation() {
         // empty!
     }
-
-
 }

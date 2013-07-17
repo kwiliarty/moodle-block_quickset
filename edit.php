@@ -366,10 +366,10 @@ function section_tostring($section, $lastindex, $sno, $showicon = false,
     $result .= '<span class="">';
     if ($section->name == '') {
         $result .= '<input type="text" name="n' . $section->id .
-                                '" size="75" value="Untitled" tabindex="' . ($lastindex + $sno) . '" /></span>';
+                                '" value="Untitled" tabindex="' . ($lastindex + $sno) . '" /></span>';
     } else {
         $result .= '<input type="text" name="n' . $section->id .
-                                '" size="75" value="' . $section->name .
+                                '" value="' . $section->name .
                                 '" tabindex="' . ($lastindex + $sno) . '" /></span>';
     }
     if ($return) {
