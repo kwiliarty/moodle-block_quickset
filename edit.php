@@ -56,6 +56,7 @@ if (optional_param('returntocourse', null, PARAM_TEXT)) {
 
 if (optional_param('updatesettings', null, PARAM_TEXT)) {
     process_form($courseid, $params);
+    rebuild_course_cache($courseid, true);
     redirect("$CFG->wwwroot/course/view.php?id=$courseid");
 }
 
@@ -109,6 +110,7 @@ if (optional_param('addnewsectionafterselected', null, PARAM_CLEAN) &&
             print_error('coursenotupdated');
         }
     }
+    rebuild_course_cache($courseid, true);
 }
 
 if (optional_param('sectiondeleteselected', false, PARAM_BOOL) &&
@@ -141,6 +143,7 @@ if (optional_param('sectiondeleteselected', false, PARAM_BOOL) &&
     if (!$DB->update_record('course_format_options', $courseformat)) {
         print_error('coursenotupdated');
     }
+    rebuild_course_cache($courseid, true);
 }
 
 if (optional_param('savechanges', false, PARAM_BOOL) && confirm_sesskey()) {
@@ -188,7 +191,7 @@ if (optional_param('savechanges', false, PARAM_BOOL) && confirm_sesskey()) {
             }
         }
     }
-
+    rebuild_course_cache($courseid, true);
 }
 
 // End of process commands =====================================================
