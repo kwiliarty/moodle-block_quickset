@@ -27,10 +27,10 @@ $PAGE->set_url($thispageurl);
 
 // Get the course object and related bits.
 $course = $DB->get_record('course', array('id' => $courseid));
-$PAGE->set_course($course);
 if (!$course) {
     print_error('invalidcourseid', 'error');
 }
+$PAGE->set_course($course);
 // Log this visit.
 add_to_log($courseid, 'block_quickset', 'editsections',
             "edit.php");
