@@ -192,6 +192,7 @@ if (optional_param('savechanges', false, PARAM_BOOL) && confirm_sesskey()) {
         }
     }
     rebuild_course_cache($courseid, true);
+    redirect("$CFG->wwwroot/course/view.php?id=$courseid");
 }
 
 // End of process commands =====================================================
@@ -218,18 +219,12 @@ function section_print_section_list($sections, $thispageurl, $courseid) {
     require_once('../../config.php');
     global $CFG, $DB, $OUTPUT;
 
-    $strorder = get_string('order');
     $strreturn = get_string('returntocourse', 'block_quickset');
     $strremove = get_string('removeselected', 'block_quickset');
-    $stredit = get_string('edit');
-    $strview = get_string('view');
-    $straction = get_string('action');
-    $strmove = get_string('move');
-    $strmoveup = get_string('moveup');
-    $strmovedown = get_string('movedown');
     $strreordersections = get_string('reordersections', 'block_quickset');
     $straddnewsectionafterselected = get_string('addnewsectionsafterselected', 'block_quickset');
     $strareyousureremoveselected = get_string('areyousureremoveselected', 'block_quickset');
+    $strcancel = get_string('cancel');
 
     foreach ($sections as $section) {
         $order[] = $section->section;
@@ -251,10 +246,12 @@ function section_print_section_list($sections, $thispageurl, $courseid) {
     $reordercontrols1 .= '<span class="addnewsectionafterselected">' .
             '<input type="submit" name="addnewsectionafterselected" value="' .
             $straddnewsectionafterselected . '" /></span>';
-
+/*
     $reordercontrols2top = '<span class="moveselectedonpage">' .
             '<input type="submit" name="savechanges" value="' .
             $strreordersections . '" /></span>';
+*/
+
     $reordercontrols2bottom = '<span class="moveselectedonpage">' .
             '<input type="submit" name="savechanges" value="' .
             $strreordersections . '" /></span>';
@@ -262,11 +259,11 @@ function section_print_section_list($sections, $thispageurl, $courseid) {
     $reordercontrols3 = '<span class="nameheader"></span>';
     $reordercontrols4 = '<span class="returntocourse">' .
             '<input type="submit" name="returntocourse" value="' .
-            $strreturn . '" /></span>';
+            $strcancel . '" /></span>';
 
     $reordercontrolstop = '<div class="reordercontrols">' .
             $reordercontrolssetdefaultsubmit .
-            $reordercontrols1 . $reordercontrols3 . $reordercontrols2top . "</div><br />";
+            $reordercontrols1 . $reordercontrols3 . "</div>";
     $reordercontrolsbottom = '<br /><br /><div class="reordercontrols">' .
             $reordercontrolssetdefaultsubmit .
             $reordercontrols4 . $reordercontrols2bottom . "</div>";
