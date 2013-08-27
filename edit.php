@@ -204,6 +204,12 @@ $node = $PAGE->settingsnav->find('mod_quiz_edit', navigation_node::TYPE_SETTING)
  echo $OUTPUT->header();
 
 $sections = $DB->get_records('course_sections', array('course' =>$courseid));
+foreach ($sections as $section) {
+    if ($section->section > 99) {
+        $section->section /= 100;
+        $DB->update_record('course_sections', $section);
+    }
+}
 section_print_section_list($sections, $thispageurl, $courseid);
 
 echo $OUTPUT->footer();
