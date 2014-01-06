@@ -51,7 +51,7 @@ class block_quickset extends block_base {
         $returnurl = "$CFG->wwwroot/course/view.php?id=$COURSE->id";
         $numsections = $DB->get_field('course_format_options', 'value', array('courseid' => $COURSE->id, 'name' => 'numsections', 'format' => $COURSE->format));
 
-        $context = get_context_instance(CONTEXT_COURSE, $COURSE->id);
+        $context = context_course::instance($COURSE->id);
         if (has_capability('moodle/course:update', $context)) {
             if ($COURSE->visible == 1) {
                 $students = 'green';
