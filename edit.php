@@ -246,12 +246,13 @@ function section_print_section_list($sections, $thispageurl, $courseid) {
     $reordercontrolssetdefaultsubmit = '<span class="nodisplay">' .
             '<input type="submit" name="savechanges" value="' .
             $strreordersections . '" /></span>';
-
+/*
     $reordercontrols1 = '<span class="sectiondeleteselected">' .
             '<input type="submit" name="sectiondeleteselected" ' .
             'onclick="return confirm(\'' .
             $strareyousureremoveselected . '\');" style="background-color: #ffb2b2" value="' .
             get_string('removeselected', 'block_quickset') . '" /></span>';
+*/
     $reordercontrols1 .= '<span class="addnewsectionafterselected">' .
             '<input type="submit" name="addnewsectionafterselected" value="' .
             $straddnewsectionafterselected . '" /></span>';
