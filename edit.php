@@ -36,7 +36,7 @@ add_to_log($courseid, 'block_quickset', 'editsections',
             "edit.php");
 
 // You need mod/section:manage in addition to section capabilities to access this page.
-$context = get_context_instance(CONTEXT_COURSE, $COURSE->id);
+$context = context_course::instance($COURSE->id);
 require_capability('moodle/course:update', $context);
 
 // Process commands ============================================================
@@ -407,8 +407,7 @@ function process_form($courseid, $data) {
         error('Course format record doesn\'t exist');
     }
 
-    $context = get_context_instance(CONTEXT_COURSE, $courseid);
-    $context = get_context_instance(CONTEXT_COURSE, $courseid);
+    $context = context_course::instance($courseid);
     if (has_capability('moodle/course:update', $context)) {
         // Process making grades available data
         $course->showgrades = $data['grades'];
